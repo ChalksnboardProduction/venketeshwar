@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import Script from "next/script";
 import Header from "@/components/Header";
 
 export default function Home() {
@@ -44,39 +45,72 @@ export default function Home() {
       const data = await res.json();
 
       if (res.ok) {
-        // 2. Initiate Payment
+        // 2. Initiate Razorpay Payment
         try {
-          const payRes = await fetch("/api/payment/initiate", {
+          const orderRes = await fetch("/api/payment/razorpay/order", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ studentId: data.data.id }) // Assuming API returns 'data' which allows access to 'id'
+            body: JSON.stringify({ studentId: data.data.id })
           });
 
-          const payData = await payRes.json();
+          const orderData = await orderRes.json();
 
-          if (payData.success) {
-            // Auto-submit form to Airpay
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = payData.action;
+          if (orderData.success) {
+            const options = {
+              key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+              amount: orderData.order.amount,
+              currency: orderData.order.currency,
+              name: "The Venkateshwar School",
+              description: "Student Registration Fee",
+              image: "/logo.png",
+              order_id: orderData.order.id,
+              handler: async function (response) {
+                try {
+                  const verifyRes = await fetch("/api/payment/razorpay/verify", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      razorpay_payment_id: response.razorpay_payment_id,
+                      razorpay_order_id: response.razorpay_order_id,
+                      razorpay_signature: response.razorpay_signature,
+                      studentId: data.data.id
+                    })
+                  });
 
-            // Add all params as hidden fields
-            for (const key in payData.params) {
-              const input = document.createElement('input');
-              input.type = 'hidden';
-              input.name = key;
-              input.value = payData.params[key];
-              form.appendChild(input);
-            }
+                  const verifyData = await verifyRes.json();
 
-            document.body.appendChild(form);
-            form.submit();
+                  if (verifyData.success) {
+                    window.location.href = "/payment/success";
+                  } else {
+                    setStatus("error");
+                    setMessage("Payment verification failed.");
+                  }
+                } catch (err) {
+                  console.error(err);
+                  setStatus("error");
+                  setMessage("Verification error.");
+                }
+              },
+              prefill: {
+                name: formData.studentName,
+                email: formData.email,
+                contact: formData.phone
+              },
+              theme: {
+                color: "#3399cc"
+              }
+            };
 
-            setStatus("loading"); // Keep loading while redirecting
-            setMessage("Redirecting to payment gateway...");
+            const rzp1 = new window.Razorpay(options);
+            rzp1.on('payment.failed', function (response) {
+              setStatus("error");
+              setMessage(response.error.description || "Payment failed");
+            });
+            rzp1.open();
+
           } else {
             setStatus("error");
-            setMessage(payData.error || "Payment initiation failed.");
+            setMessage(orderData.error || "Payment initiation failed.");
           }
         } catch (payError) {
           console.error("Payment Error:", payError);
@@ -97,6 +131,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Header />
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
       {/* Banner Section - Full Width */}
       <div className="w-full relative mt-24">

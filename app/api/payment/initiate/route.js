@@ -46,7 +46,7 @@ export async function POST(request) {
             mercid: merchantId,
             orderid: orderId,
             currency: '356', // ISO 4217 Numeric Code for INR
-            isocode: 'INR',  // ISO 4217 Alphabetic Code for INR
+            isocurrency: 'INR', // ISO 4217 Alphabetic Code for INR
             amount: '1.00', // Ensure 2 decimal places
 
             // Standard Airpay often expects these specific keys
