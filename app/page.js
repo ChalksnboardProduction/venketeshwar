@@ -88,7 +88,7 @@ export default function Home() {
 
 
       {/* Banner Section - Full Width */}
-      <div className="w-full relative mt-24">
+      <div className="w-full relative mt-16 md:mt-24">
         <Image
           src="/school-banner.jpg"
           alt="School Banner"
@@ -209,7 +209,7 @@ export default function Home() {
                         <option value="7">Class 7</option>
                         <option value="8">Class 8</option>
                         <option value="9">Class 9</option>
-                        <option value="10">Class 10</option>
+                        <option value="11">Class 11</option>
                       </select>
                     </div>
                   </div>

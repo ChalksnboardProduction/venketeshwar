@@ -28,7 +28,7 @@ export default function AdminPanel() {
         <div className="flex flex-col min-h-screen bg-gray-50">
             <Header />
 
-            <main className="flex-grow py-28 px-4 sm:px-8">
+            <main className="flex-grow py-20 md:py-28 px-4 sm:px-8">
                 <div className="max-w-7xl mx-auto">
                     <div className="flex justify-between items-center mb-8">
                         <h1 className="font-heading text-3xl font-bold text-gray-900">Admin Dashboard</h1>

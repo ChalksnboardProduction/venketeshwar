@@ -6,7 +6,7 @@ export default function PaymentFailure() {
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
             <Header />
-            <div className="flex-grow flex items-center justify-center p-4">
+            <div className="flex-grow flex items-center justify-center p-4 pt-20 md:pt-28">
                 <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-gray-100">
                     <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6 text-red-600">
                         <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
